@@ -1,0 +1,79 @@
+{% include "header.html" %}
+
+
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+
+  <!-- Page Header -->
+  <header class="masthead" style="background-image: url('{{post.img_url}}')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>{{post.title}}</h1>
+            <h2 class="subheading">{{post.subtitle}}</h2>
+            <span class="meta">Posted by
+              {% if post.author_id == 1 %}
+              <a href="{{url_for('about')}}">Chris Moulton</a>
+              {% endif %}
+              on {{post.date}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Post Content -->
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            {{ post.body|safe }}
+          <hr>
+            {% if current_user.id == 1 %}
+            <div class="clearfix">
+            <a class="btn btn-primary float-right" href="{{url_for('edit_post', post_id=post.id)}}">Edit Post</a>
+            </div>
+            {% endif %}
+
+
+
+<!--           Comments Area -->
+          <div class="col-lg-8 col-md-10 mx-auto comment">
+              <div>
+                {{wtf.quick_form(comment_form, button_map={'submit':'primary'})}}
+              </div>
+              <div class="container">
+              <ul class="commentList">
+
+
+                  {% for comment in comments %}
+                  <li>
+                    <div class="row commentRow">
+                      <div class="col-auto">
+                        <p>{{ comment.body }}</p>
+                        <span class="date sub-text">{{ comment.name }} {{ comment.date }}</span>
+                        {% if current_user.id == 1 %}
+                      <a href="{{url_for('delete_comment', post_id=comment.id) }}">✘</a>
+                      {% endif %}
+                      </div>
+                    </div>
+
+                    <hr>
+                  </li>
+                {% endfor %}
+
+              </ul>
+            </div>
+
+
+          </div>
+      </div>
+    </div>
+    </div>
+  </article>
+
+  <hr>
+{% include "footer.html" %}
+{% endblock %}
