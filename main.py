@@ -32,7 +32,6 @@ login_manager = LoginManager(app)
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     title = db.Column(db.String(250), unique=True, nullable=False)
     subtitle = db.Column(db.String(250), nullable=False)
     date = db.Column(db.String(250), nullable=False)
@@ -47,7 +46,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(250), nullable=False)
 
     blog_posts = db.relationship('BlogPost', backref='Users')
-    comments = db.relationship('Comments', backref='Users')
 
     def __init__(self, name, email, password):
         self.email = email
@@ -61,8 +59,7 @@ class Comments(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    name = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.Text, nullable=False)
     date = db.Column(db.Integer, nullable=False)
 
 
@@ -267,12 +264,14 @@ def delete_post(post_id):
     db.session.commit()
     return redirect(url_for('get_all_posts'))
 
+@admin_only
 @app.route("/delete_comment/<int:post_id>")
 def delete_comment(post_id):
     comment_to_delete = Comments.query.get(post_id)
     db.session.delete(comment_to_delete)
     db.session.commit()
     return redirect(url_for('show_post', post_id=post_id))
+
 
 
 if __name__ == "__main__":
