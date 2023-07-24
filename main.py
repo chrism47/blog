@@ -36,7 +36,7 @@ class BlogPost(db.Model):
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
-#
+# build sql lib with these parts
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -58,7 +58,7 @@ class Comments(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Text, nullable=False)
-    name = db.Column(db.Text, nullable=False)
+    name = db.Column(db.String, nullable=False)
     date = db.Column(db.Integer, nullable=False)
     blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
 
