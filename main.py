@@ -44,7 +44,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(250), nullable=False)
 
-    blog_posts = db.relationship('BlogPost', backref='Users')
+    # blog_posts = db.relationship('BlogPost', backref='Users')
 
     def __init__(self, name, email, password):
         self.email = email
@@ -60,7 +60,7 @@ class Comments(db.Model):
     body = db.Column(db.Text, nullable=False)
     name = db.Column(db.String, nullable=False)
     date = db.Column(db.Integer, nullable=False)
-    blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
+    # blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
 
 
 db.create_all()
