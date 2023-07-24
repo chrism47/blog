@@ -9,25 +9,24 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, ContactForm
+# a massive pile of dependencies
 
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 ckeditor = CKEditor(app)
 Bootstrap(app)
+# configure BS CKE and flask, load_dotenv() for env variables
 
 
-##CONNECT TO DB
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+# connect the db with flask and sqlalch
 
 login_manager = LoginManager(app)
-
-
-##CONFIGURE TABLES
+# flask validation?
 
 class BlogPost(db.Model):
     __tablename__ = "blog_posts"
@@ -37,7 +36,7 @@ class BlogPost(db.Model):
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
-
+#
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -61,9 +60,10 @@ class Comments(db.Model):
     body = db.Column(db.Text, nullable=False)
     name = db.Column(db.Text, nullable=False)
     date = db.Column(db.Integer, nullable=False)
+    blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
 
 
-# db.create_all()
+db.create_all()
 
 
 
