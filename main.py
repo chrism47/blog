@@ -63,7 +63,7 @@ class Comments(db.Model):
     date = db.Column(db.Integer, nullable=False)
 
 
-db.create_all()
+# db.create_all()
 
 
 
