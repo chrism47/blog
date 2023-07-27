@@ -36,7 +36,11 @@ class BlogPost(db.Model):
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
-# build sql lib with these parts
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    comments = db.relationship('Comments', backref='blog_post', cascade='all, delete-orphan')
+    #set up db relationships around posts
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
@@ -44,7 +48,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(250), nullable=False)
     email = db.Column(db.String(250), nullable=False)
 
-    blog_posts = db.relationship('BlogPost', backref='Users')
+    blog_posts = db.relationship('BlogPost', backref='user')
 
     def __init__(self, name, email, password):
         self.email = email
@@ -60,17 +64,17 @@ class Comments(db.Model):
     body = db.Column(db.Text, nullable=False)
     name = db.Column(db.String, nullable=False)
     date = db.Column(db.Integer, nullable=False)
-    # blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
-
+    blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
+    #the foreign key
 
 db.create_all()
-
+# this is an if-necessary piece for db building
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(user_id)
-
+#get the user id of the current user and store it in the user_loader
 
 def admin_only(route_function):
     @wraps(route_function)
@@ -80,14 +84,14 @@ def admin_only(route_function):
         else:
             abort(403)
     return check_id
-
+#decorator for creating admin only privileges, (auth + id match)
 
 @app.route('/')
 def get_all_posts():
     posts = BlogPost.query.all()
     posts.reverse()
     return render_template("index.html", all_posts=posts)
-
+#pull all posts and order by newest post on top
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
