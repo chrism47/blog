@@ -158,7 +158,7 @@ def show_post(post_id):
         else:
             new_comment = Comments(
                 body=comment_form.body.data,
-                author_id=current_user.id,
+                id=current_user.id,
                 name=current_user.name,
                 date=date.today().strftime("%B %d, %Y")
 
