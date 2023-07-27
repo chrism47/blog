@@ -37,7 +37,7 @@ class BlogPost(db.Model):
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     comments = db.relationship('Comments', backref='blog_post', cascade='all, delete-orphan')
     #set up db relationships around posts
 
@@ -66,7 +66,6 @@ class Comments(db.Model):
     date = db.Column(db.Integer, nullable=False)
     blog_post_id = db.Column(db.Integer, db.ForeignKey('blog_posts.id'), nullable=False)
     #the foreign key
-
 db.create_all()
 # this is an if-necessary piece for db building
 
@@ -164,7 +163,8 @@ def show_post(post_id):
                 body=comment_form.body.data,
                 id=current_user.id,
                 name=current_user.name,
-                date=date.today().strftime("%B %d, %Y")
+                date=date.today().strftime("%B %d, %Y"),
+                blog_post_id=post_id
 
             )
             db.session.add(new_comment)
