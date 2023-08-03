@@ -10,11 +10,15 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, ContactForm
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 # a massive pile of dependencies
 
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+limiter = Limiter(get_remote_address, app=app)
+
 ckeditor = CKEditor(app)
 Bootstrap(app)
 # configure BS CKE and flask, load_dotenv() for env variables
@@ -68,6 +72,8 @@ class Comments(db.Model):
     #the foreign key
 db.create_all()
 # this is an if-necessary piece for db building
+
+
 
 
 @login_manager.user_loader
@@ -230,7 +236,6 @@ def add_new_post():
             subtitle=form.subtitle.data,
             body=form.body.data,
             img_url=form.img_url.data,
-            id=current_user.id,
             date=date.today().strftime("%B %d, %Y")
         )
         db.session.add(new_post)
@@ -239,7 +244,7 @@ def add_new_post():
     return render_template("make-post.html", form=form)
 
 @admin_only
-@app.route("/edit-post/<int:post_id>")
+@app.route("/edit-post/<int:post_id>", methods=["POST", "GET"])
 def edit_post(post_id):
     post = BlogPost.query.get(post_id)
     edit_form = CreatePostForm(
@@ -253,7 +258,6 @@ def edit_post(post_id):
         post.title = edit_form.title.data
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
-        post.author = edit_form.author.data
         post.body = edit_form.body.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
