@@ -24,9 +24,10 @@
           <a href="{{ url_for('show_post', post_id=post.id) }}">
             <h2 class="post-title">
               {{post.title}}
+
             </h2>
             <h3 class="post-subtitle">
-              {{post.subtitle}}
+              {{post.subtitle}}:  <em>{{post.category}}</em>
             </h3>
           </a>
           <p class="post-meta">Posted by

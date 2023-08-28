@@ -12,12 +12,13 @@ import os
 from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm, ContactForm
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_migrate import Migrate
 # a massive pile of dependencies
 
 load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-limiter = Limiter(get_remote_address, app=app)
+# limiter = Limiter(get_remote_address, app=app)
 
 ckeditor = CKEditor(app)
 Bootstrap(app)
@@ -27,6 +28,8 @@ Bootstrap(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', "sqlite:///blog.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
 # connect the db with flask and sqlalch
 
 login_manager = LoginManager(app)
@@ -40,6 +43,7 @@ class BlogPost(db.Model):
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
+    category = db.Column(db.String(80), server_default="default_value")
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     comments = db.relationship('Comments', backref='blog_post', cascade='all, delete-orphan')
@@ -53,15 +57,17 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(250), nullable=False)
 
     blog_posts = db.relationship('BlogPost', backref='user')
+    #the structure of the user profile. It is related to posts via relational mapping
 
     def __init__(self, name, email, password):
         self.email = email
         self.password = password
         self.name = name
 
+    #user info
     def get_id(self):
         return str(self.id)
-
+    #
 class Comments(db.Model):
     __tablename__ = "comments"
     id = db.Column(db.Integer, primary_key=True)
@@ -72,9 +78,6 @@ class Comments(db.Model):
     #the foreign key
 db.create_all()
 # this is an if-necessary piece for db building
-
-
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -235,6 +238,7 @@ def add_new_post():
             title=form.title.data,
             subtitle=form.subtitle.data,
             body=form.body.data,
+            category=form.category.data,
             img_url=form.img_url.data,
             date=date.today().strftime("%B %d, %Y")
         )
@@ -283,4 +287,5 @@ def delete_comment(post_id):
 
 
 if __name__ == "__main__":
+
     app.run(host='0.0.0.0', port=5000)
