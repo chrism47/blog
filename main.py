@@ -264,6 +264,7 @@ def edit_post(post_id):
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
         post.body = edit_form.body.data
+        post.category = edit_form.category
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
