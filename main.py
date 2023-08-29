@@ -242,6 +242,7 @@ def add_new_post():
             img_url=form.img_url.data,
             date=date.today().strftime("%B %d, %Y")
         )
+        print(form.category.data)
         db.session.add(new_post)
         db.session.commit()
         return redirect(url_for("get_all_posts"))
@@ -264,7 +265,7 @@ def edit_post(post_id):
         post.subtitle = edit_form.subtitle.data
         post.img_url = edit_form.img_url.data
         post.body = edit_form.body.data
-        post.category = edit_form.category
+        post.category = edit_form.category.data
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
