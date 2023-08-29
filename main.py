@@ -256,7 +256,8 @@ def edit_post(post_id):
         subtitle=post.subtitle,
         img_url=post.img_url,
         id=post.id,
-        body=post.body
+        body=post.body,
+        category=post.category
     )
     if edit_form.validate_on_submit():
         post.title = edit_form.title.data
