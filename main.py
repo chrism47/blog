@@ -43,7 +43,7 @@ class BlogPost(db.Model):
     date = db.Column(db.String(250), nullable=False)
     body = db.Column(db.Text, nullable=False)
     img_url = db.Column(db.String(250), nullable=False)
-    category = db.Column(db.String(80), server_default="default_value")
+    category = db.Column(db.String(80), nullable=False, server_default="default_value")
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
     comments = db.relationship('Comments', backref='blog_post', cascade='all, delete-orphan')
